@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
@@ -26,8 +27,17 @@ public class ApplicationConfig {
 
     @Bean
     // we use Bean to define spring application
+    @Profile("!dev")
     public TimeService timeService(){
         return new TimeService(true);
+    }
+    // we created two profiles, edited the run configurations,
+    // passed the profile as vm options (also program arguments
+    // can be used)
+    @Bean
+    @Profile("dev")
+    public TimeService timeService2(){
+        return new TimeService(false);
     }
 
     @Bean
