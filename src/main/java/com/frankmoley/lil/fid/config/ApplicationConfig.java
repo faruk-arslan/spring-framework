@@ -19,6 +19,14 @@ public class ApplicationConfig {
     private String greeting;
     @Value("${app.name}")
     private String name;
+    /**
+     * This is the spring environment (includes system OS env. variables,
+     * VM arguments, Application arguments as well as any configuration that is loaded).
+     */
+    @Value("#{new Boolean(environment['spring.profiles.active']!='dev')}")
+    private boolean is24;
+
+
 
     @Autowired
     private GreetingService greetingService;
@@ -27,17 +35,8 @@ public class ApplicationConfig {
 
     @Bean
     // we use Bean to define spring application
-    @Profile("!dev")
     public TimeService timeService(){
-        return new TimeService(true);
-    }
-    // we created two profiles, edited the run configurations,
-    // passed the profile as vm options (also program arguments
-    // can be used)
-    @Bean
-    @Profile("dev")
-    public TimeService timeService2(){
-        return new TimeService(false);
+        return new TimeService(is24);
     }
 
     @Bean
