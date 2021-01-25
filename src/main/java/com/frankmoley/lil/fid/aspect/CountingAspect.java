@@ -1,9 +1,11 @@
 package com.frankmoley.lil.fid.aspect;
 
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +25,8 @@ public class CountingAspect {
     @Pointcut("@annotation(Countable)")
     public void executeCounting(){ }
 
-    @Around(value = "executeCounting()")
-    public Object countMethodCall(ProceedingJoinPoint joinPoint) throws Throwable {
-
-        Object returnValue=joinPoint.proceed();
-
+    @Before(value = "executeCounting()")
+    public void countMethodCall(JoinPoint joinPoint) throws Throwable {
         StringBuilder message=new StringBuilder("");
         // package + class name
         String decleration=joinPoint.getSignature().getDeclaringType().toString();
@@ -45,7 +44,5 @@ public class CountingAspect {
 ;            message.append("Method: "+k+" -- Called "+v+" times.");
         });
         LOGGER.info(message.toString());
-        return returnValue;
-
     }
 }
