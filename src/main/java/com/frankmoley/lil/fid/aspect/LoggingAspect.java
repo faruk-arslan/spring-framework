@@ -1,10 +1,8 @@
 package com.frankmoley.lil.fid.aspect;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,14 +21,22 @@ public class LoggingAspect {
 
     }
 
-    // we als acces twhat the method returns in addition to the data of the method
-    // we do all of that after the call executed
-    // if the method returns an exception, this will never be executed, because
-    // this is after returning not after throwing
-    @AfterReturning(value = "executeLogging()", returning = "returnValue")
-    public void logMethodCall(JoinPoint joinPoint, Object returnValue){
+    // with around, we can handle anything before, anything after returning and
+    // anything after throwing
+    @Around(value = "executeLogging()")
+    public Object logMethodCall(ProceedingJoinPoint joinPoint) throws Throwable {
+        // before
+        long startTime=System.currentTimeMillis();
+        // execution
+        Object returnValue=joinPoint.proceed();
+        // after
+        long totalTime=System.currentTimeMillis()-startTime;
+
         StringBuilder message=new StringBuilder("Method: ");
         message.append(joinPoint.getSignature().getName());
+
+        message.append(" totalTime: ").append(totalTime).append("ms");
+
         // be careful on production code, args could contain sensitive information
         Object[] args=joinPoint.getArgs();
         if(args!=null && args.length>0){
@@ -47,6 +53,9 @@ public class LoggingAspect {
         }
 
         LOGGER.info(message.toString());
+        // we sent back the return data in order to print it
+        // it'll be printed out what we send here
+        return returnValue;
     }
 
 }
