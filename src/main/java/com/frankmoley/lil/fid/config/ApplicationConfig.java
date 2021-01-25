@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:application.properties")
 @ComponentScan(basePackages = "com.frankmoley.lil.fid")
-// to allow the proxy to load and use the com.frankmoley.lil.fid.aspect
+// to allow the proxy to load and use the aspect
 @EnableAspectJAutoProxy
 public class ApplicationConfig {
 
